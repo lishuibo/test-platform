@@ -1,0 +1,199 @@
+{% extends 'cms/cms_base.html' %}
+{% from 'common/_macros.html' import static %}
+{% block title %}
+    接口测试管理
+{% endblock %}
+
+{% block head %}
+    <style xmlns="http://www.w3.org/1999/html">
+        .top-box {
+            overflow: hidden;
+            background: #ecedf0;
+            padding: 10px 5px;
+        }
+
+        .top-box button {
+            float: right;
+        }
+
+        .table-bordered {
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+
+    </style>
+
+    <script src="{{ static('cms/js/api_test_case.js') }}"></script>
+{% endblock %}
+
+{% block page_title %}
+    {{ self.title() }}
+{% endblock %}
+
+{% block main_content %}
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="navbar-form navbar-left" action="/cms/api_test_case/search/" method="get">
+            <div class="form-group"><b>用例名称</b>
+                <input type="text" class="form-search" placeholder="请输入用例名称" name="search_case_name">
+            </div>
+            <div class="form-group"><b>请求URL</b>
+                <input type="text" class="form-search" placeholder="请输入请求URL" name="search_request_url">
+            </div>
+            <div class="form-group"><b>请求参数</b>
+                <input type="text" class="form-search" placeholder="请输入请求参数" name="search_request_data">
+            </div>
+            <div class="form-group"><b>请求方式</b>
+                <select class="form-control" id="method" name="search_request_method">
+                    <option selected value=""></option>
+                    <option value="get">get</option>
+                    <option value="post">post</option>
+                </select>
+            </div>
+            <div class="form-group"><b>运行结果</b>
+                <select class="form-control" id="method" name="search_request_result">
+                    <option selected value=""></option>
+                    <option value="pass">pass</option>
+                    <option value="fail">fail</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default search-api-test-case-btn">搜索</button>
+            <button type="button" class="btn btn-default view-api-test-case-btn"
+                    onclick="window.location.href = '/cms/test_report/view/'">查看测试报告
+            </button>
+        </form>
+    </div>
+    <div class="top-box">
+        <button class="btn btn-warning" data-toggle="modal" data-target="#api-test-case-dialog">添加新接口测试用例</button>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>用例名称</th>
+            <th>请求URL</th>
+            <th>请求参数</th>
+            <th>请求方式</th>
+            <th>预期结果</th>
+            <th>运行结果</th>
+            <th>操作人</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for api_test_case in api_test_case_model %}
+            <tr data-case-name="{{ api_test_case.case_name }}"
+                data-id="{{ api_test_case.id }}" data-request-url="{{ api_test_case.request_url }}"
+                data-request-data="{{ api_test_case.request_data }}"
+                data-request-method="{{ api_test_case.request_method }}"
+                data-request-expected-result="{{ api_test_case.request_expected_result }}"
+                data-request-result="{{ api_test_case.request_result }}"
+                data-operator="{{ api_test_case.operator }}">
+                <td>{{ api_test_case.case_name }}</td>
+                <td>{{ api_test_case.request_url }}</td>
+                <td>{{ api_test_case.request_data }}</td>
+                <td>{{ api_test_case.request_method }}</td>
+                <td>{{ api_test_case.request_expected_result }}</td>
+                <td>{{ api_test_case.request_result }}</td>
+                <td>{{ api_test_case.operator }}</td>
+                <td>{{ api_test_case.create_time }}</td>
+                <td>
+                    <button class="btn btn-default edit-api-test-case-btn">编辑</button>
+                    <button class="btn btn-danger delete-api-test-case-btn">删除</button>
+                    <button class="btn btn-primary run-api-test-case-btn">运行</button>
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+    <div style="text-align: center">
+        {{ pagination.links }}
+    </div>
+
+    <div class="modal fade" id="api-test-case-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">接口测试用例</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" class="form-horizontal">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用例名称</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="case_name" placeholder="用例名称">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">请求URL</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="request_url" placeholder="请求URL">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">请求参数</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="request_data" placeholder="请求参数">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">请求方式</label>
+
+                            <div class="col-sm-10">
+                                <select class="form-control" id="method">
+                                    <option value="get" selected name="request_method">get</option>
+                                    <option value="post" name="request_method">post</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">预期结果</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="request_expected_result"
+                                       placeholder="预期结果">
+                            </div>
+                        </div>
+
+                        {#                        <div class="form-group">#}
+                        {#                            <label class="col-sm-2 control-label">实际结果</label>#}
+                        {##}
+                        {#                            <div class="col-sm-10">#}
+                        {#                                <input type="text" class="form-control" name="request_result" placeholder="实际结果">#}
+                        {#                            </div>#}
+                        {#                        </div>#}
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">操作人</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="operator" placeholder="操作人">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="save_api_test_case_btn">保存</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
